@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Lab04Shvachka.Stores;
+using Lab04Shvachka.ViewModels;
 
 namespace Lab04Shvachka
 {
@@ -18,6 +20,9 @@ namespace Lab04Shvachka
     {
         public MainWindow()
         {
+            NavigationStore navigationStore = new NavigationStore();
+            navigationStore.CurrentViewModel = new PersonDataDisplayViewModel(navigationStore);
+            DataContext = new MainViewModel(navigationStore);
             InitializeComponent();
         }
     }

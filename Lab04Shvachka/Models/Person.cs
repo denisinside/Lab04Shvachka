@@ -27,13 +27,12 @@ namespace Lab04Shvachka.Models
         public string FullName { get; private set; }
         public string Email { get { return _email; } }
         public DateTime DateOfBirth { get { return _birthday; } }
-        public String FormattedDateOfBirthday { get { return DateOfBirth.ToString("dd.MM.yyyy"); } }
 
-        public int Age { get; private set; }
-        public bool IsAdult { get; private set; }
-        public WesternZodiacSign WesternZodiacSign { get; private set; }
-        public ChineseZodiacSign ChineseZodiacSign { get; private set; }
-        public bool IsBirthday { get; private set; }
+        public int Age { get; set; }
+        public bool IsAdult { get; set; }
+        public WesternZodiacSign WesternZodiacSign { get; set; }
+        public ChineseZodiacSign ChineseZodiacSign { get; set; }
+        public bool IsBirthday { get; set; }
         #endregion
 
         #region Constructors
@@ -43,6 +42,15 @@ namespace Lab04Shvachka.Models
             _surname = surname;
             _email = email;
             _birthday = dateOfBirthday;
+
+            FullName = $"{Name} {Surname}";
+            DateAnalyser analyser = new(DateOfBirth);
+            Age =analyser.CalculateAge();
+            IsAdult =  analyser.IsAdult();
+            IsBirthday = true;
+
+            WesternZodiacSign = ZodiacCalculator.CalculateWesternZodiac(DateOfBirth);
+            ChineseZodiacSign =  ZodiacCalculator.CalculateChineseZodiac(DateOfBirth);
         }
         public Person(string name, string surname, string email) : this(name, surname, email, DateTime.MinValue)
         {

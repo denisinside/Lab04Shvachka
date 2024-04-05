@@ -9,7 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controls\" />
+    <None Remove="Views\ascendingSort.png" />
+    <None Remove="Views\descendingSort.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Views\ascendingSort.png" />
+    <Resource Include="Views\descendingSort.png" />
   </ItemGroup>
 
 </Project>

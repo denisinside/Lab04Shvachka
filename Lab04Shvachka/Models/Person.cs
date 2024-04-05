@@ -1,32 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Linq;
 using Lab04Shvachka.Services;
 
 namespace Lab04Shvachka.Models
 {
-    public class Person
+    public class Person : INotifyPropertyChanged
     {
+        #region PropertyChanged
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string PropertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
+        }
+        #endregion
+
         #region Fields
         private string _name;
         private string _surname;
         private string _email;
         private DateTime _birthday;
-
-        private bool _initialized = false;
-        private Lazy<Task> _task;
         #endregion
 
         #region Properties
-        public string Name { get { return _name; } }
-        public string Surname { get { return _surname; } }
-        public string FullName { get; private set; }
-        public string Email { get { return _email; } }
-        public DateTime DateOfBirth { get { return _birthday; } }
+        public string Name { get { return _name; } set { _name = value; OnPropertyChanged(); } }
+        public string Surname { get { return _surname; } set { _surname = value; OnPropertyChanged(); } }
+        public string Email { get { return _email; } set { _email = value; OnPropertyChanged(); } }
+        public DateTime DateOfBirth
+        {
+            get => _birthday;
+            set
+            {
+                _birthday = value;
+                InitializePerson();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(Age));
+                OnPropertyChanged(nameof(IsBirthday));
+                OnPropertyChanged(nameof(WesternZodiacSign));
+                OnPropertyChanged(nameof(ChineseZodiacSign));
+            }
+        }
 
         public int Age { get; set; }
         public bool IsAdult { get; set; }
@@ -36,21 +56,13 @@ namespace Lab04Shvachka.Models
         #endregion
 
         #region Constructors
+        public Person() { }
         public Person(string name, string surname, string email, DateTime dateOfBirthday)
         {
-            _name = name;
-            _surname = surname;
-            _email = email;
-            _birthday = dateOfBirthday;
-
-            FullName = $"{Name} {Surname}";
-            DateAnalyser analyser = new(DateOfBirth);
-            Age =analyser.CalculateAge();
-            IsAdult =  analyser.IsAdult();
-            IsBirthday = true;
-
-            WesternZodiacSign = ZodiacCalculator.CalculateWesternZodiac(DateOfBirth);
-            ChineseZodiacSign =  ZodiacCalculator.CalculateChineseZodiac(DateOfBirth);
+            Name = name;
+            Surname = surname;
+            Email = email;
+            DateOfBirth = dateOfBirthday;
         }
         public Person(string name, string surname, string email) : this(name, surname, email, DateTime.MinValue)
         {
@@ -60,20 +72,15 @@ namespace Lab04Shvachka.Models
         }
         #endregion
 
-        public async Task InitializePersonAsync()
+        public void InitializePerson()
         {
-            if (!_initialized)
-            {
-                FullName = $"{Name} {Surname}";
-
                 DateAnalyser analyser = new DateAnalyser(DateOfBirth);
-                Age = await Task.Run(() => analyser.CalculateAge());
-                IsAdult = await Task.Run(() => analyser.IsAdult());
-                IsBirthday = await Task.Run(() => analyser.IsBirthdayToday());
+                Age = analyser.CalculateAge();
+                IsAdult = analyser.IsAdult();
+                IsBirthday = analyser.IsBirthdayToday();
 
-                WesternZodiacSign = await Task.Run(() => ZodiacCalculator.CalculateWesternZodiac(DateOfBirth));
-                ChineseZodiacSign = await Task.Run(() => ZodiacCalculator.CalculateChineseZodiac(DateOfBirth));
-            }
+                WesternZodiacSign = ZodiacCalculator.CalculateWesternZodiac(DateOfBirth);
+                ChineseZodiacSign = ZodiacCalculator.CalculateChineseZodiac(DateOfBirth);
         }
     }
 }

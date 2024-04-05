@@ -5,39 +5,178 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Lab04Shvachka.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tools="clr-namespace:Lab04Shvachka.Tools"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
     <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                <GradientStop Offset="0" Color="#FFC9DCFF" />
+                <GradientStop Offset="1" Color="#FFFFFFB9" />
+            </LinearGradientBrush>
+        </Grid.Background>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.2*" />
-            <RowDefinition Height="0.2*" />
-            <RowDefinition Height="0.2*" />
-            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="60" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.75*" />
-            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="467*" />
+            <ColumnDefinition Width="333*" />
         </Grid.ColumnDefinitions>
 
-        <DataGrid
+        <Menu
+            Grid.ColumnSpan="2"
+            Margin="15,0,0,0"
+            VerticalAlignment="Bottom"
+            Background="{x:Null}"
+            FontSize="18">
+            <MenuItem
+                Margin="0,0,2.5,0"
+                Padding="10,10,10,10"
+                Background="#19000000"
+                BorderBrush="Black"
+                Header="Add">
+                <MenuItem Command="{Binding NavigateAddPersonMenuCommand}" Header="Custom" />
+                <MenuItem Command="{Binding AddRandomUser}" Header="Random" />
+            </MenuItem>
+            <MenuItem
+                Margin="2.5,0,2.5,0"
+                Padding="10,10,10,10"
+                Background="#19000000"
+                BorderBrush="Black"
+                Header="Delete">
+                <MenuItem Command="{Binding DeleteSelectedUsers}" Header="Selected" />
+                <MenuItem Command="{Binding DeleteAllUsers}" Header="All" />
+            </MenuItem>
+            <MenuItem
+                Margin="2.5,0,2.5,0"
+                Padding="10,10,10,10"
+                Background="#19000000"
+                BorderBrush="Black"
+                Command="{Binding ChangeEditMode}"
+                Header="{Binding EditModeStatus, Mode=OneWay}" />
+            <MenuItem
+                Margin="2.5,0,2.5,0"
+                Padding="10,10,10,10"
+                Background="#19000000"
+                BorderBrush="Black"
+                Command="{Binding CloseCommand}"
+                Header="Close" />
+        </Menu>
+
+
+        <ComboBox
             Grid.Row="0"
-            Grid.RowSpan="5"
+            Grid.Column="1"
+            Width="175"
+            Height="30"
+            Margin="0,0,15,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            FontSize="18"
+            SelectedIndex="{Binding SelectedSortMode}">
+            <ComboBoxItem Content="By name" />
+            <ComboBoxItem Content="By surname" />
+            <ComboBoxItem Content="By email" />
+            <ComboBoxItem Content="By age" />
+            <ComboBoxItem Content="By having birthday" />
+        </ComboBox>
+
+        <RadioButton
+            Grid.Column="1"
+            Margin="0,0,200,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            IsChecked="{Binding DescendingMode}">
+            <WrapPanel>
+                <Image
+                    Width="32"
+                    Height="32"
+                    Margin="0,0,5,0"
+                    Source="/Views/descendingSort.png" />
+            </WrapPanel>
+        </RadioButton>
+        <RadioButton
+            Grid.Column="1"
+            Margin="0,0,264,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            IsChecked="{Binding AscendingMode}">
+            <WrapPanel>
+                <Image
+                    Width="32"
+                    Height="32"
+                    Margin="0,0,5,0"
+                    Source="/Views/ascendingSort.png" />
+            </WrapPanel>
+        </RadioButton>
+
+        <DataGrid
+            Grid.Row="1"
             Grid.Column="0"
-            Margin="15"
+            Grid.ColumnSpan="2"
+            Margin="15,15,15,15"
+            HorizontalContentAlignment="Center"
+            AlternatingRowBackground="#FFE5E5D4"
             AutoGenerateColumns="False"
-            CanUserAddRows="True"
+            CanUserAddRows="False"
             CanUserDeleteRows="False"
             CanUserReorderColumns="False"
             CanUserResizeRows="False"
-            ItemsSource="{Binding Users, UpdateSourceTrigger=PropertyChanged}">
+            CanUserSortColumns="False"
+            HorizontalGridLinesBrush="#FFC5C5C5"
+            IsReadOnly="{Binding EditMode}"
+            ItemsSource="{Binding PersonsStore.Users, UpdateSourceTrigger=PropertyChanged}"
+            RowBackground="#FFD7DCE6"
+            SelectedIndex="{Binding SelectedPersonIndex}"
+            VerticalGridLinesBrush="#FFC2C2C2">
+            <DataGrid.RowValidationRules>
+                <tools:PersonValidationRule ValidationStep="UpdatedValue" />
+            </DataGrid.RowValidationRules>
+            <DataGrid.RowValidationErrorTemplate>
+                <ControlTemplate>
+                    <Grid Margin="0,-2,0,-2" ToolTip="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}}, Path=(Validation.Errors)[0].ErrorContent}">
+                        <Ellipse
+                            Width="{TemplateBinding FontSize}"
+                            Height="{TemplateBinding FontSize}"
+                            Fill="Red"
+                            StrokeThickness="0" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="{TemplateBinding FontSize}"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Text="!" />
+                    </Grid>
+                </ControlTemplate>
+            </DataGrid.RowValidationErrorTemplate>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Path=Name}" Header="Name" />
-                <DataGridTextColumn Binding="{Binding Path=Surname}" Header="Surname" />
-                <DataGridTextColumn Binding="{Binding Path=Email}" Header="Email" />
+                <DataGridTextColumn
+                    Width="auto"
+                    MinWidth="75"
+                    Binding="{Binding Path=Name}"
+                    Header="Name" />
+                <DataGridTextColumn
+                    Width="auto"
+                    MinWidth="75"
+                    Binding="{Binding Path=Surname}"
+                    Header="Surname" />
+                <DataGridTextColumn
+                    Width="auto"
+                    MinWidth="75"
+                    Binding="{Binding Path=Email}"
+                    Header="Email" />
 
-                <DataGridTemplateColumn Header="Birthday">
+                <DataGridTemplateColumn
+                    Width="auto"
+                    MinWidth="95"
+                    Header="Birthday">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Path=DateOfBirth, StringFormat=d}" />
@@ -50,11 +189,32 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Binding="{Binding Path=Age}" Header="Age" />
-                <DataGridCheckBoxColumn Binding="{Binding Path=IsBirthday}" Header="Is Birthday" />
-                <DataGridTextColumn Binding="{Binding Path=WesternZodiacSign}" Header="Western Zodiac" />
-                <DataGridTextColumn Binding="{Binding Path=ChineseZodiacSign}" Header="Chinese Zodiac" />
+                <DataGridTextColumn
+                    Width="auto"
+                    MinWidth="30"
+                    Binding="{Binding Path=Age, Mode=OneWay}"
+                    Header="Age"
+                    IsReadOnly="True" />
+                <DataGridCheckBoxColumn
+                    Width="auto"
+                    MinWidth="30"
+                    Binding="{Binding Path=IsBirthday, Mode=OneWay}"
+                    Header="Is Birthday"
+                    IsReadOnly="True" />
+                <DataGridTextColumn
+                    Width="auto"
+                    MinWidth="75"
+                    Binding="{Binding Path=WesternZodiacSign, Mode=OneWay}"
+                    Header="Western Zodiac"
+                    IsReadOnly="True" />
+                <DataGridTextColumn
+                    Width="*"
+                    MinWidth="75"
+                    Binding="{Binding Path=ChineseZodiacSign, Mode=OneWay}"
+                    Header="Chinese Zodiac"
+                    IsReadOnly="True" />
             </DataGrid.Columns>
         </DataGrid>
+
     </Grid>
 </UserControl>

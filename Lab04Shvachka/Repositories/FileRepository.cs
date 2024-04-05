@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,21 +17,20 @@ namespace Lab04Shvachka.Repositories
 
         public FileRepository() 
         {
-            if (Directory.Exists(BaseFolder))
+            if (!Directory.Exists(BaseFolder))
                 Directory.CreateDirectory(BaseFolder);
         }
 
-        public async Task AddOrUpdateAsync(ObservableCollection<Person> obj)
+        public async Task AddOrUpdateAsync(BindingList<Person> obj)
         {
             var stringObj = JsonSerializer.Serialize(obj);
-
             using (StreamWriter sw  = new StreamWriter(Path.Combine(BaseFolder, "Users"), false))
             {
                 await sw.WriteAsync(stringObj);
             }
         }
 
-        public async Task<ObservableCollection<Person>> GetAsync()
+        public async Task<BindingList<Person>> GetAsync()
         {
             string stringObj = null;
 
@@ -43,7 +43,7 @@ namespace Lab04Shvachka.Repositories
                 stringObj = await sr.ReadToEndAsync();
             }
 
-            return JsonSerializer.Deserialize<ObservableCollection<Person>>(stringObj);
+            return JsonSerializer.Deserialize<BindingList<Person>>(stringObj);
         }
     }
 }

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Lab04Shvachka.Exceptions
 {
-    class TooOldAgeError : Exception
-    {  
-        public TooOldAgeError() { }
-        public TooOldAgeError(string message) : base(message)
+    class AgeError : Exception
+    {
+        public AgeError() { }
+        public AgeError(string message) : base(message)
         {
         }
     }

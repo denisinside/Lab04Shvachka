@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using Lab04Shvachka.Exceptions;
 
 namespace Lab04Shvachka.Services
@@ -25,40 +26,36 @@ namespace Lab04Shvachka.Services
         }
         public async Task ValidatePersonValuesAsync()
         {
-            try
-            {
-                await Task.Run(() => EmailValidation());
-                await Task.Run(() => AgeValidation());
-                await Task.Run(() => BanCheck());
-            }
-            catch
-            {
-                throw;
-            }
+            if(!await Task.Run(() => EmailValidation(_email)))
+                throw new EmailFormatError("Invalid email format.");
+            if (!await Task.Run(() => AgeValidation(_dateTime)))
+                throw new AgeError("Unacceptable age.");
+            if (!await Task.Run(() => BanCheck(_name, _surname)))
+                throw new BannedUserError("Get out of here, robber!");
+            if (!await Task.Run(() => NameValidation(_name, _surname)))
+                throw new BannedUserError("Empty name or surname value.");
         }
 
-        private void EmailValidation()
+        public static bool EmailValidation(string email)
         {
             string emailRegexPattern = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
-            if (!Regex.IsMatch(_email, emailRegexPattern, RegexOptions.IgnoreCase))
-                throw new EmailFormatError();
+            return Regex.IsMatch(email, emailRegexPattern, RegexOptions.IgnoreCase);
         }
 
-        private void AgeValidation()
+        public static bool AgeValidation(DateTime dateTime)
         {
-            DateAnalyser da = new(_dateTime);
-             int age = da.CalculateAge();
-            if(age < 0)
-                throw new TooYoungAgeError();
-            if (age > 135)
-                throw new TooOldAgeError();
+            int age = new DateAnalyser(dateTime).CalculateAge();
+            return age >= 0 && age <= 135;
         }
 
-        private void BanCheck()
+        public static bool BanCheck(string name, string surname)
         {
-            var fullName = $"{_name} {_surname}";
-            if(_blackList.Contains(fullName))
-                throw new BannedUserError();
+            return !_blackList.Contains($"{name} {surname}");
+        }
+
+        public static bool NameValidation(string name, string surname)
+        {
+            return !String.IsNullOrWhiteSpace(name) && !String.IsNullOrWhiteSpace(surname);
         }
     }
 }

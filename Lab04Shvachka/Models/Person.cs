@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
@@ -56,13 +57,24 @@ namespace Lab04Shvachka.Models
         #endregion
 
         #region Constructors
-        public Person() { }
         public Person(string name, string surname, string email, DateTime dateOfBirthday)
         {
             Name = name;
             Surname = surname;
             Email = email;
             DateOfBirth = dateOfBirthday;
+        }
+        [JsonConstructorAttribute]
+        public Person(string Name, string Surname, string Email, DateTime DateOfBirth, int Age, bool IsBirthday, WesternZodiacSign WesternZodiacSign, ChineseZodiacSign ChineseZodiacSign)
+        {
+            this.Name = Name;
+            this.Surname = Surname;
+            this.Email = Email;
+            _birthday = DateOfBirth;
+            this.Age = Age;
+            this.IsBirthday = IsBirthday;
+            this.WesternZodiacSign = WesternZodiacSign;
+            this.ChineseZodiacSign = ChineseZodiacSign;
         }
         public Person(string name, string surname, string email) : this(name, surname, email, DateTime.MinValue)
         {

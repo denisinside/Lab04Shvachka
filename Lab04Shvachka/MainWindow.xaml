@@ -7,9 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="clr-namespace:Lab04Shvachka.ViewModels"
     xmlns:views="clr-namespace:Lab04Shvachka.Views"
-    Title="MainWindow"
     Width="800"
     Height="450"
+    MinWidth="780"
+    MinHeight="300"
+    Title="MeowMeowProgramm"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Grid>
